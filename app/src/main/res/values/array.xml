@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sizes">
+        <item>주소</item>
+        <item>퇴계동</item>
+        <item>석사동</item>
+        <item>강남동</item>
+        <item>후평1동</item>
+        <item>후평2동</item>
+        <item>후평3동</item>
+        <item>효자1동</item>
+        <item>효자2동</item>
+        <item>효자3동</item>
+        <item>교동</item>
+        <item>근화동</item>
+        <item>소양동</item>
+        <item>신사우동</item>
+        <item>조운동</item>
+        <item>약사명동</item>
+        <item>신북읍</item>
+        <item>동면</item>
+        <item>동산면</item>
+        <item>신동면</item>
+        <item>남면</item>
+        <item>서면</item>
+        <item>북산면</item>
+        <item>동내면</item>
+        <item>남산면</item>
+
+    </string-array>
+</resources>
+
+

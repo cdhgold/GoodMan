@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/sangho"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorError"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+    <ListView
+        android:id="@+id/list_reserve"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:padding="5dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="8">
+
+            <EditText
+                android:id="@+id/userNm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="예  약  자  명"
+                android:textAlignment="textStart"
+                android:textColor="@color/black" />
+
+
+            <EditText
+                android:id="@+id/bigo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="남  기  실  말  씀"
+                android:textAlignment="textStart"
+                android:inputType="textMultiLine"
+                android:textColor="@color/black" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_send"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="예약" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
