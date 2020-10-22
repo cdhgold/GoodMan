@@ -9,11 +9,11 @@ import java.util.Map;
 미용실 정보 : 주소, 상호명 ,uid
  */
 public class SanghoVo {
-    public String uid; // Firebase Realtime Database 에 등록된 Key 값
+    public String UID; // Firebase Realtime Database 에 등록된 Key 값
     public String juso; // 사용자 이름
     public String sangho; // 내용
     public String Today; // 시간
-    public String fkey; // path key
+    public String fkey; //
 
 
     public Map<String, Object> toMap(){

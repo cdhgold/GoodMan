@@ -1,8 +1,11 @@
 package com.cdhgold.reserve;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.cdhgold.reserve.ui.HomeFragm;
+import com.cdhgold.reserve.ui.MyShopListFragm;
 import com.cdhgold.reserve.ui.SanghoListFragm;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         navView.setOnNavigationItemSelectedListener(new ItemSelectListener());
         transaction =  getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.infoFrameLayout, slist).commitAllowingStateLoss();
+
     }
 
     /*
@@ -43,8 +47,9 @@ public class MainActivity extends AppCompatActivity {
             TransThrd tt = null;
             switch (menuItem.getItemId()) {
                 case R.id.nav_home: // 첫화면 (메인 - 상품list  )
-                    //transaction.replace(R.id.infoFrameLayout, newmember).commitAllowingStateLoss();
-
+                    HomeFragm home = new HomeFragm();
+                    tt = new TransThrd(home); // too much work으로 thread로 처리해야함.
+                    tt.start();
                     break;
 
                 case R.id.sangho: //선택상품 chat화면으로 이동 firebase
@@ -52,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
                     tt.start();
                     break;
 
+                case R.id.myshop: //내미용실 선택 ( 내 미용실만 나오게 )
+                    MyShopListFragm my = new MyShopListFragm();
+                    tt = new TransThrd(my); // too much work으로 thread로 처리해야함.
+                    tt.start();
+                    break;
             }
             return true;
         }

@@ -57,7 +57,7 @@ public class Util {
     public static void writeNewPost(FirebaseDatabase mDatabase, String juso,  String sangho ) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
-        String key = mDatabase.getReference("미용실").push().getKey();
+        String key = mDatabase.getReference("shop").push().getKey();
         SanghoVo vo = new SanghoVo();
         vo.juso = juso;
         vo.sangho = sangho;
@@ -74,14 +74,14 @@ public class Util {
     public static void writeNewReserve(FirebaseDatabase mDatabase, String nm,  String bigo,String fkey ) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
-        String key = mDatabase.getReference(fkey ).child("예약").push().getKey();
+        String key = mDatabase.getReference(fkey ).child("reserve").push().getKey();
         ReserveVo vo = new ReserveVo();
         vo.userNm = nm;
         vo.bigo = bigo;
         Map<String, Object> postValues = vo.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put(fkey + key, postValues);
-        mDatabase.getReference(fkey).child("예약").updateChildren(childUpdates);
+        mDatabase.getReference(fkey).child("reserve").updateChildren(childUpdates);
     }
 //2020101617220302147483647GMT+09:00_0.49708799179938523   ,  yyyyMMddHHmmssSSSSSSSSSSSzzz
     public static  String getUid() {

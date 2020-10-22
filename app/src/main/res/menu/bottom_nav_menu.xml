@@ -10,5 +10,10 @@
         android:id="@+id/sangho"
         android:enabled="true"
         android:icon="@android:drawable/sym_action_call"
-        android:title="내미용실등록" />
+        android:title="예약" />
+    <item
+        android:id="@+id/myshop"
+        android:enabled="true"
+        android:icon="@android:drawable/checkbox_on_background"
+        android:title="내미용실선택" />
 </menu>

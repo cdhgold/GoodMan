@@ -1,6 +1,8 @@
 package com.cdhgold.reserve.ui;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -8,19 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.cdhgold.reserve.MainActivity;
 import com.cdhgold.reserve.R;
-import com.cdhgold.reserve.util.Util;
 import com.cdhgold.reserve.vo.SanghoVo;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -32,21 +29,22 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Map;
 
 /*
-등록된 미용실목록이 나온다.
+내 미용실 등록하기 화면
  */
-public class SanghoListFragm extends Fragment implements View.OnClickListener {
+public class MyShopListFragm extends Fragment implements View.OnClickListener {
     private View view;
-    private EditText mEdtSangho;
+
     private TextView tjuso;
     private TextView tsangho;
     private TextView ttime;
 
     private FirebaseDatabase mFirebaseDatabase;
-    private Spinner mSpinner;
+
     private SanghoAdapter mAdapter;
     private ListView mListView;
     private String sfilter = "";
-    private String mykey = "";
+    private String fkey = "";
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,24 +52,18 @@ public class SanghoListFragm extends Fragment implements View.OnClickListener {
 
     }
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.list_activity, container, false);
-        view.findViewById(R.id.btn_send).setOnClickListener(this);// 버튼클릭
+        view = inflater.inflate(R.layout.myshop_list, container, false);
+        view.findViewById(R.id.btn_send).setOnClickListener(this);// 버튼클릭 내미용실선택
+        view.findViewById(R.id.btn_release).setOnClickListener(this);// 버튼클릭 해제
+
         return view;
     }
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getActivity().setTitle("춘천미용실-내미용실등록(상호/연락처)");
-        setHasOptionsMenu(true);
-        mEdtSangho = view.findViewById(R.id.sangho);
+        getActivity().setTitle("춘천미용실-내미용실선택");
 
-        mSpinner = view.findViewById(R.id.spinner);
-        String[] models = getResources().getStringArray(R.array.sizes);
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(getContext(), R.layout.support_simple_spinner_dropdown_item, models);
-        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        mSpinner.setAdapter(adapter);
         initViews();
         initFirebaseDatabase();
     }
@@ -88,19 +80,10 @@ public class SanghoListFragm extends Fragment implements View.OnClickListener {
 
         view.findViewById(R.id.btn_send).setOnClickListener(this);
     }
-    /*
-     중요: fragment에선 resume에서 사용해야함.
-     */
-    public void onResume() {
-        super.onResume();
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        mykey =  pref.getString("fkey" , "" );
-
-    }
     private void initFirebaseDatabase() {
         //
-
-          DatabaseReference ref = FirebaseDatabase.getInstance().getReference( ) ;
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference( ) ;
+ Log.d("cdhgold","Database ref obtained."+ref);
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         // path 목록을 가져온다
         ref.addValueEventListener(new ValueEventListener() {
@@ -109,19 +92,10 @@ public class SanghoListFragm extends Fragment implements View.OnClickListener {
 
                 for (DataSnapshot data : dataSnapshot.getChildren()){
                     String skey = data.getKey();
-
                     SanghoVo vo = data.getValue(SanghoVo.class);
                     vo.fkey = skey ;
-                    if(!"".equals(mykey) && skey.equals(mykey)) {
-                        mAdapter.clear();
-                        mAdapter.notifyDataSetChanged();
-                        mAdapter.add(vo);
-                        break;
-                    }else{
-                        mAdapter.add(vo);
-                    }
+                    mAdapter.add(vo);
                     //mAdapter.notifyDataSetChanged();
-                    sfilter = skey;
                 }
 
             }
@@ -163,38 +137,44 @@ public class SanghoListFragm extends Fragment implements View.OnClickListener {
 
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             SanghoVo vo = mAdapter.getItem(position);
- Log.d("list click ",vo.toMap().toString());
             Map map = vo.toMap();
-            String uid = (String)map.get("UID");
-            String sangho = (String)map.get("sangho");// 미용실 명
-            String fkey = (String)map.get("fkey");// 미용실 명
-            Bundle bundle = new Bundle();
-            bundle.putString("fkey", fkey);
-            bundle.putString("sangho", sangho);
-            ReserveListFragm frg = new ReserveListFragm();
-            frg.setArguments(bundle); // param pass
-            ((MainActivity)getContext()).replaceFragment(frg);    // 새로 불러올 Fragment의 Instance를 Main으로 전달
-
+            fkey = (String)map.get("fkey");// 미용실 path key
+            for (int i = 0; i < mListView.getChildCount(); i++) {
+                if(position == i ){
+                    mListView.getChildAt(i).setBackgroundColor(Color.YELLOW);
+                }else{
+                    mListView.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
+                }
+            }
         }
 
     };
-
-
-/*
-글쓰기: path (상품명 으로 채팅방을 만든다 )
- */
+    /*
+    내 미용실 선택 / 해제
+     */
     @Override
     public void onClick(View v) {
-        String sangho = mEdtSangho.getText().toString();
-        String juso = mSpinner.getSelectedItem().toString();
-        mEdtSangho.setText("");
-        mSpinner.setSelected(false);
-        if("".equals(sangho) || "".equals(juso)  ){
-            Util.showAlim("주소, 미용실명(전호번호)을 입력하세요!",getContext() );
-        }else{
-            Util.writeNewPost(mFirebaseDatabase,juso,sangho);
-            SanghoListFragm frg = new SanghoListFragm();
-            ((MainActivity)getContext()).replaceFragment(frg);
+        switch (v.getId()) {
+
+            case R.id.btn_send: //
+
+                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putString("fkey", fkey);
+                editor.commit();
+                break;
+
+            case R.id.btn_release: //
+                SanghoVo svo1 = new SanghoVo();
+                SharedPreferences pref1 = PreferenceManager.getDefaultSharedPreferences(getContext());
+                SharedPreferences.Editor editor1 = pref1.edit();
+                editor1.putString("fkey", "");
+                editor1.commit();
+
+                break;
+
         }
+
     }
+
 }

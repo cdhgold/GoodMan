@@ -88,7 +88,7 @@ public class ReserveListFragm extends Fragment implements View.OnClickListener {
     }
     private void initFirebaseDatabase() {
         //DatabaseReference upvotesRef = ref.child("server/saving-data/fireblog/posts/-JRHTHaIs-jNPLXOQivY/upvotes");
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(fkey  ).child("예약") ;
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(fkey  ).child("reserve") ;
  Log.d("cdhgold","Database ref obtained."+ref);
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         // path 목록을 가져온다
