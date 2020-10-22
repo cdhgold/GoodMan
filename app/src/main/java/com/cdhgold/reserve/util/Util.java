@@ -80,7 +80,7 @@ public class Util {
         vo.bigo = bigo;
         Map<String, Object> postValues = vo.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(fkey, postValues);
+        childUpdates.put(fkey + key, postValues);
         mDatabase.getReference(fkey).child("예약").updateChildren(childUpdates);
     }
 //2020101617220302147483647GMT+09:00_0.49708799179938523   ,  yyyyMMddHHmmssSSSSSSSSSSSzzz

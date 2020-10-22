@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.cdhgold.reserve.MainActivity;
 import com.cdhgold.reserve.R;
 import com.cdhgold.reserve.util.Util;
 import com.cdhgold.reserve.vo.ReserveVo;
@@ -163,6 +164,8 @@ public class ReserveListFragm extends Fragment implements View.OnClickListener {
             Util.showAlim("예약자명, 남길말씀을 입력하세요!",getContext() );
         }else{
             Util.writeNewReserve(mFirebaseDatabase,nm,bigo,fkey);
+            ReserveListFragm frg = new ReserveListFragm();
+            ((MainActivity)getContext()).replaceFragment(frg);
         }
     }
 }
