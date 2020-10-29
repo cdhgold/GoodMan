@@ -15,6 +15,7 @@ public class ReserveVo {
     public String bigo;     //
     public String Today;    // 시간
     public String fkey;    //
+    public String sortkey;    // 999,998 ...
 
     public Map<String, Object> toMap(){
         Map<String, Object> map = new HashMap<String, Object>();
@@ -22,6 +23,7 @@ public class ReserveVo {
         map.put("userTel",userTel);
         map.put("bigo",bigo);
         map.put("fkey",fkey);
+        map.put("sortkey",sortkey);
         map.put("UID", Util.getUid() );
         map.put("Today", Util.toDay() );
         return map;

@@ -1,6 +1,7 @@
 package com.cdhgold.reserve.ui;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -20,6 +21,9 @@ import androidx.fragment.app.Fragment;
 
 import com.cdhgold.reserve.MainActivity;
 import com.cdhgold.reserve.R;
+import com.cdhgold.reserve.util.BillingManager;
+import com.cdhgold.reserve.util.GetMember;
+import com.cdhgold.reserve.util.SetMember;
 import com.cdhgold.reserve.util.Util;
 import com.cdhgold.reserve.vo.SanghoVo;
 import com.google.firebase.database.ChildEventListener;
@@ -30,11 +34,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 /*
-등록된 미용실목록이 나온다.
+결제화면 : 6개월 5천원
  */
-public class SanghoListFragm extends Fragment implements View.OnClickListener {
+public class PaymentFragm extends Fragment implements View.OnClickListener {
     private View view;
     private EditText mEdtSangho;
     private TextView tjuso;
@@ -54,24 +60,17 @@ public class SanghoListFragm extends Fragment implements View.OnClickListener {
 
     }
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.list_activity, container, false);
-        view.findViewById(R.id.btn_send).setOnClickListener(this);// 버튼클릭
+        view = inflater.inflate(R.layout.payment_list, container, false);
+        view.findViewById(R.id.btn_send).setOnClickListener(this);// 버튼클릭 : 결제
         return view;
     }
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getActivity().setTitle("춘천미용실-내미용실등록(상호/연락처)");
+        getActivity().setTitle("춘천미용실-결제(6개월5천원)");
         setHasOptionsMenu(true);
-        mEdtSangho = view.findViewById(R.id.sangho);
 
-        mSpinner = view.findViewById(R.id.spinner);
-        String[] models = getResources().getStringArray(R.array.sizes);
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(getContext(), R.layout.support_simple_spinner_dropdown_item, models);
-        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        mSpinner.setAdapter(adapter);
         initViews();
         initFirebaseDatabase();
     }
@@ -163,39 +162,55 @@ public class SanghoListFragm extends Fragment implements View.OnClickListener {
 
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             SanghoVo vo = mAdapter.getItem(position);
- Log.d("list click ",vo.toMap().toString());
             Map map = vo.toMap();
-            String uid = (String)map.get("UID");
-            String sangho = (String)map.get("sangho");// 미용실 명
-            String fkey = (String)map.get("fkey");// 미용실 명
-            Bundle bundle = new Bundle();
-            bundle.putString("fkey", fkey);
-            bundle.putString("sangho", sangho);
-            ReserveListFragm frg = new ReserveListFragm();
-            frg.setArguments(bundle); // param pass
-            ((MainActivity)getContext()).replaceFragment(frg);    // 새로 불러올 Fragment의 Instance를 Main으로 전달
-
+            mykey = (String)map.get("fkey");// 미용실 명
+            for (int i = 0; i < mListView.getChildCount(); i++) {
+                if(position == i ){
+                    mListView.getChildAt(i).setBackgroundColor(Color.YELLOW);
+                }else{
+                    mListView.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
+                }
+            }
         }
 
     };
 
 
 /*
-글쓰기: path (상품명 으로 채팅방을 만든다 )
+결제창을 띄우고, 결과를 등록
+Util.writeNewReserve(mFirebaseDatabase,nm,bigo,fkey);
  */
     @Override
     public void onClick(View v) {
-        String sangho = mEdtSangho.getText().toString();
-        String juso = mSpinner.getSelectedItem().toString();
-        mEdtSangho.setText("");
-        mSpinner.setSelected(false);
-Log.d("등록",sangho)        ;
-        if("".equals(sangho) || "주소".equals(juso) ||"".equals(juso)  ){
-            Util.showAlim("주소, 미용실명(전호번호)을 입력하세요!",getContext() );
-        }else{
-            Util.writeNewPost(mFirebaseDatabase,juso,sangho);
-            SanghoListFragm frg = new SanghoListFragm();
-            ((MainActivity)getContext()).replaceFragment(frg);
+        //Util.showAlim("결제",getContext());
+        //결제여부 확인하고 , 결제창을 띄운다 , 결제는 6월, 12월 체크한다.
+        /*
+        1-6 : 6월체크, 7-12: 12월체크
+         */
+Log.d("pay",mykey);
+        if("".equals(mykey)){
+            return;
         }
+        String chkday = Util.chkDay(); // yyyyMMdd
+        // 결제여부확인 chkday
+        GetMember getMem = new GetMember(mykey, chkday);
+        FutureTask futureTask = new FutureTask(getMem);
+        Thread thread = new Thread(futureTask);
+        thread.start();
+        try {
+            String ret = (String)futureTask.get(); // 결과
+//Log.d("getPayChk ","ret");
+            if("0".equals(ret)) {// 결제등록이 없으면 , 결제실행
+                BillingManager bill = new BillingManager(getActivity(),mFirebaseDatabase,mykey);
+                bill.setProd("p_member");
+            }else{
+                Util.showAlim("결제됐습니다.",getContext());
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 }

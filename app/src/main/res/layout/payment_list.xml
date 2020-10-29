@@ -14,31 +14,16 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:background="#CECEF6"
         android:orientation="horizontal">
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="8">
-            <Spinner
-                android:id="@+id/spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                  />
-            <EditText
-                android:id="@+id/sangho"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="상호명(연락처)"
-                 />
-        </LinearLayout>
+
         <Button
             android:id="@+id/btn_send"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="회원등록"/>
+            android:layout_weight="1"
+            android:text=" 결제 "/>
 
     </LinearLayout>
 </LinearLayout>

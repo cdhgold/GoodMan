@@ -6,6 +6,7 @@ import android.view.MenuItem;
 
 import com.cdhgold.reserve.ui.HomeFragm;
 import com.cdhgold.reserve.ui.MyShopListFragm;
+import com.cdhgold.reserve.ui.PaymentFragm;
 import com.cdhgold.reserve.ui.SanghoListFragm;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -19,6 +20,8 @@ import androidx.fragment.app.FragmentTransaction;
 신북읍	동면	동산면	신동면	남면	서면	사북면	북산면	동내면	남산면	교동	조운동	약사명동 근화동	소양동	후평1동 후평2동
 후평3동 효자1동 효자2동 효자3동 석사동 퇴계동	강남동	 신사우동
 등록된 미용실목록이 나온다.
+결제는 6개월 5천원 , 결제를 하려면 회원등록, 결제여부확인 처리
+
  */
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManager = getSupportFragmentManager();
@@ -62,6 +65,13 @@ public class MainActivity extends AppCompatActivity {
                     tt = new TransThrd(my); // too much work으로 thread로 처리해야함.
                     tt.start();
                     break;
+                case R.id.payment: // 결제 ( 6개월 5천원 ) 화면으로 이동
+                    PaymentFragm pay = new PaymentFragm();
+                    tt = new TransThrd(pay); // too much work으로 thread로 처리해야함.
+                    tt.start();
+                    break;
+
+
             }
             return true;
         }

@@ -1,6 +1,9 @@
 package com.cdhgold.reserve.ui;
 
+import android.content.SharedPreferences;
+import android.icu.text.RelativeDateTimeFormatter;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.solver.state.State;
 import androidx.fragment.app.Fragment;
 
 import com.cdhgold.reserve.MainActivity;
@@ -29,6 +33,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
+
+import static java.security.AccessController.getContext;
 
 /*
 미용실 예약 화면
@@ -91,11 +97,11 @@ public class ReserveListFragm extends Fragment implements View.OnClickListener {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(fkey  ).child("reserve") ;
  Log.d("cdhgold","Database ref obtained."+ref);
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        // path 목록을 가져온다
-        ref.addValueEventListener(new ValueEventListener() {
+        // path 목록을 가져온다 .orderBy("population", Direction.DESCENDING);
+        ref.orderByChild("sortkey").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
+                mAdapter.clear(); // 주의: double로 보임.
                 for (DataSnapshot data : dataSnapshot.getChildren()){
                     ReserveVo vo = data.getValue(ReserveVo.class);
                     mAdapter.add(vo);
@@ -116,6 +122,7 @@ public class ReserveListFragm extends Fragment implements View.OnClickListener {
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                mAdapter.notifyDataSetChanged();
             }
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
@@ -163,9 +170,26 @@ public class ReserveListFragm extends Fragment implements View.OnClickListener {
         if("".equals(nm) || "".equals(bigo)  ){
             Util.showAlim("예약자명, 남길말씀을 입력하세요!",getContext() );
         }else{
-            Util.writeNewReserve(mFirebaseDatabase,nm,bigo,fkey);
-            ReserveListFragm frg = new ReserveListFragm();
-            ((MainActivity)getContext()).replaceFragment(frg);
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+            String sortkey =  pref.getString("sortkey" , "9999" );
+            SharedPreferences.Editor editor = pref.edit();
+            int tmp = Integer.parseInt(sortkey)-1;
+            if(tmp < 10){
+                tmp = 9999;
+            }
+            sortkey = String.valueOf(tmp);
+            editor.putString("sortkey", sortkey);
+            editor.commit();
+
+            Util.writeNewReserve(mFirebaseDatabase,nm,bigo,fkey,sortkey);
+            //SanghoListFragm frg = new SanghoListFragm();
+            //((MainActivity)getContext()).replaceFragment(frg);
+
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        mAdapter.notifyDataSetChanged();
     }
 }
