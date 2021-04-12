@@ -107,6 +107,7 @@ public class Util {
         childUpdates.put(key, postValues);
 
         mDatabase.getReference(fkey).child("reserve").updateChildren(childUpdates);
+        // 삭제 mDatabase.getReference(fkey).removeValue();
     }
     /*
     결제 등록 (6개월 5천원)
