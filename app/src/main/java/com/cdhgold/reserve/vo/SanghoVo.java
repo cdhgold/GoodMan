@@ -15,7 +15,11 @@ public class SanghoVo {
     public String Today; // 시간
     public String fkey; //
 
-
+    public void SanghoVo(String sangho,String juso,String fkey){
+        this.sangho = sangho;
+        this.juso = juso;
+        this.fkey = fkey;
+    }
     public Map<String, Object> toMap(){
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("sangho",sangho);

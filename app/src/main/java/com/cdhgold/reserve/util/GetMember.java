@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import org.w3c.dom.Document;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -36,7 +37,8 @@ public class GetMember implements Callable<String> {
         String result = ""  ;
 
         try {
-            url = new URL("http://konginfo.co.kr/info/beauty/getPayChk");
+            url = new URL("http://49.50.167.90/topbd/beauty/getPayChk");
+
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             conn.setRequestProperty("Accept-Charset","UTF-8");
@@ -45,8 +47,8 @@ public class GetMember implements Callable<String> {
             conn.setConnectTimeout(10000);
             conn.setDoOutput(true);
             conn.setDoInput(true);
-            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream(),"UTF8");
 
+            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream(),"UTF8");
             HashMap<String, String> map = new HashMap<>();
             map.put("fkey", fkey);
             map.put("payday", payday);
@@ -58,9 +60,11 @@ public class GetMember implements Callable<String> {
                 sbParams.append(key).append("=").append(map.get(key));
                 sbParams.append("&");
             }
+
             wr.write(sbParams.substring(0,sbParams.length()-1));
             wr.flush();
             wr.close();
+
             StringBuffer json = new StringBuffer();
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {

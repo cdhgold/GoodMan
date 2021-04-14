@@ -108,7 +108,6 @@ public class PaymentFragm extends Fragment implements View.OnClickListener {
 
                 for (DataSnapshot data : dataSnapshot.getChildren()){
                     String skey = data.getKey();
-
                     SanghoVo vo = data.getValue(SanghoVo.class);
                     vo.fkey = skey ;
                     if(!"".equals(mykey) && skey.equals(mykey)) {
