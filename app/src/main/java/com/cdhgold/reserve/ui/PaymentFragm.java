@@ -21,7 +21,8 @@ import androidx.fragment.app.Fragment;
 
 import com.cdhgold.reserve.MainActivity;
 import com.cdhgold.reserve.R;
-import com.cdhgold.reserve.util.BillingManager;
+import com.cdhgold.reserve.util.BillingModule;
+import com.cdhgold.reserve.util.BillingModuleCallback;
 import com.cdhgold.reserve.util.GetMember;
 import com.cdhgold.reserve.util.SetMember;
 import com.cdhgold.reserve.util.Util;
@@ -33,6 +34,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -200,8 +203,7 @@ Log.d("pay",mykey);
             String ret = (String)futureTask.get(); // 결과
 //Log.d("getPayChk ","ret");
             if("0".equals(ret)) {// 결제등록이 없으면 , 결제실행
-                BillingManager bill = new BillingManager(getActivity(),mFirebaseDatabase,mykey);
-                bill.setProd("p_member");
+                ((MainActivity)getContext()).billing(mykey);
             }else{
                 Util.showAlim("결제됐습니다.",getContext());
             }

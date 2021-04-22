@@ -8,6 +8,8 @@ import com.cdhgold.reserve.ui.HomeFragm;
 import com.cdhgold.reserve.ui.MyShopListFragm;
 import com.cdhgold.reserve.ui.PaymentFragm;
 import com.cdhgold.reserve.ui.SanghoListFragm;
+import com.cdhgold.reserve.util.BillingModule;
+import com.cdhgold.reserve.util.BillingModuleCallback;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +17,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /*
 춘천시 미용예약
 신북읍	동면	동산면	신동면	남면	서면	사북면	북산면	동내면	남산면	교동	조운동	약사명동 근화동	소양동	후평1동 후평2동
@@ -26,7 +32,7 @@ import androidx.fragment.app.FragmentTransaction;
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private SanghoListFragm slist = new SanghoListFragm();
-
+    private BillingModuleCallback billingModuleCallback;
     private FragmentTransaction transaction ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,5 +97,16 @@ public class MainActivity extends AppCompatActivity {
     public void replaceFragment(Fragment fragment ) {
         TransThrd rt = new TransThrd(fragment);
         rt.start();
+    }
+    //in app결제
+    public void billing( String mykey ) {
+        List<String> sku_contents_list = new ArrayList<>();
+        sku_contents_list.add("p_member");
+        BillingModule billingModule = BillingModule.getInstance()
+                .whereToUse(this)
+                .setContentsList(sku_contents_list)
+                .setBillingModuleCallback(billingModuleCallback);
+        //start
+        billingModule.start();
     }
 }
